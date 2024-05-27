@@ -1,6 +1,7 @@
 # HamDexMFAScreenlock
 Locks the Windows desktop, using a dynamic verification code that changes every minute, provided by an MFA authenticator (e.g., Google Authenticator) for unlocking, to prevent unauthorized remote desktop access.
 While it can also be used to protect local computers, due to the possibility of physical access, it can only serve as an auxiliary login protection on local machines.
+
 Installation
 Dependencies
 Windows ≥ 7 SP1 (x86 and x64)
