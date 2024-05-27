@@ -1,75 +1,67 @@
-# NyarukoMFALock
-
-- 锁定 Windows 桌面，使用 MFA 身份验证器（例如 Google Authenticator ）提供的每分钟变更的动态验证码进行解锁，防止远程桌面未授权访问。
-- 虽然也可用于保护本地计算机，但是由于本地计算机可以直接操作，存在强制绕过的可能，因此在本地计算机中只能用于辅助登录防护。
-
-## 安装
-- 依赖
-  - `Windows ≥ 7 SP1 （x 86 和 x64）`
-  - `Windows Server ≥ 2008 R2 SP1 (x64)`
-  - `.NET Framework ≥ 4.6.2`
-    - 下载： `https://support.microsoft.com/zh-cn/help/3151800/the-net-framework-4-6-2-offline-installer-for-windows`
-- 如果已经安装旧版本：
-  - 建议先在旧版本中清除用户设置（同时会解绑验证器），然后卸载旧版本。（升级时非必须，降级时必须）
-  - 在升级过程中，用户设置和绑定状态可能会被自动清除。
-- 安装 `install.exe` 。
-  - 如果你不主动进行文件权限配置，则推荐安装到用户文件夹中，防止被其他用户访问到密码文件。
-- 运行桌面上创建的快捷方式或安装目录中的 `MFAScreenLockApp.exe` 。
-
-## 配置
-
-1. 直接运行，如果没有绑定过任何验证器，将出现设置画面。此时点击绑定按钮。
-2. 确认显示的时间日期和时区与手机完全同步。
-3. 使用 MFA APP 扫描二维码。
-  - 也可以手工抄写右上方显示的密钥进验证器。
-  - 注意：如果此计算机计算机名、用户域和同户名和其他计算机相同，其他计算机上的登录信息将被覆盖！如果出现此情况，请在扫码绑定之前修改你的计算机名称并重新启动计算机。
-4. 输入验证器上显示的代码，点击完成绑定。
-5. 记下屏幕上显示的恢复代码。
-  - 点击「是」之后恢复代码将复制到剪贴板，一旦无法使用动态密码，可以使用此恢复代码进入。
-  - 点击「否」将不产生恢复代码，虽然更安全，但是手机损坏、丢失、验证APP卸载、验证APP数据丢失等情况发生时，将会导致无法登入。
-6. 绑定信息将会显示计算机名、用户域和用户名。
-  - **注意:** 计算机名、用户域和用户名是绑定的，如果修改其中之一将会无法登入。如需修改，请先解绑验证器。
-7. 关闭设置窗口或进行「锁定设置」和「个性化」外观设置。
-8. 关闭本程序所有窗口并在状态栏右键选退出程序，将会验证一次密码。
-9. 下次开始启动程序时，将进入锁定状态。
-
-## 自动锁定
-1. 方法一（推荐）：任务栏图标点右键，选「自动锁定设置」。
-  - 可以设置 Windows 启动时运行自动锁定。
-  - 可以设置多少分钟后自动锁定。
-    - 可以看见下方自动锁定计时器，如果它不正常工作请用方法二配置自动锁定。
-    - 设置窗口在开启状态下，不会触发自动锁定。
-2. 方法二：在计划任务中将本程序进行开机启动。
-  - 可以在启动参数中加入 `-e` ，程序将在解除锁定后立即退出（否则会驻留图标在状态栏），以便利用计划任务提供的闲置时长功能来进行自动锁定。
-  - 例如：`MFAScreenLockApp.exe -e`
-
-## 使用
-- 下次运行本程序时，计算机画面将被锁定，此时请输入验证器中显示的动态密码，或者恢复代码，按回车。
-  - 如果正确，将直接解锁。
-  - 如果不正确，会根据设置，锁定几秒钟（默认为 3 秒），才能继续尝试。
-  - 解锁画面显示的背景图像为你的首选显示器桌面壁纸，并自动适应屏幕裁剪（填充），不设置桌面壁纸为黑色。
-    - 文字颜色会根据桌面壁纸自动决定黑色还是白色。
-    - 其他非首选显示器将显示空白桌面壁纸，不设置桌面壁纸为黑屏。
-    - 可以在「个性化」设置中修改以上壁纸、颜色和字体设置。
-- 解锁后，会驻留图标在状态栏，右键点击可弹出菜单，可以随时立即上锁、修改绑定、变更外观，以及退出。
-  - 这些菜单项在点击后，会重新进入一次密码输入状态，以验证是本人，之后才继续执行所选择的菜单命令。
-  - 如果没有驻留图标在状态栏，可能是加入了 `-e` 启动参数或出现了错误。
-
-## 解绑
-- 方法1：不加 `-e` 参数运行的情况下，输入密码或恢复代码解锁，在任务栏驻留的图标上点右键，选「绑定管理」，选择「解绑」，然后退出软件。
-- 方法2：在程序完全退出的情况下，带 `-r <恢复代码>` 参数启动程序，确认后可直接清除软件所有设置，包括密码。软件将自动退出。
-  - 例如：`MFAScreenLockApp.exe -r Y8K2V-5J2ZL-F6QC8-ERFJ4-4HME8-POL50`
-
-## 故障排除
-- 无法运行，提示缺少 .NET Framework
-  - 安装 .NET Framework 运行库。
-- 动态密码始终提示密码错误
-  - 在密码框输入你的恢复代码。
-  - 进入绑定设置，再次验证你的恢复代码。
-  - 清除所有用户设置。
-- 开机不能自动锁定
-  - 在程序设置中取消开机启动。
-  - 完全退出程序，然后「以管理员身份运行」程序。
-  - 在程序设置中启用开机启动。
-  - 如果仍然不行：使用「任务计划程序」设置开机启动 或 将程序快捷方式到「启动」文件夹。
-- 程序报错： [反馈](issues)
+# HamDexMFAScreenlock
+Locks the Windows desktop, using a dynamic verification code that changes every minute, provided by an MFA authenticator (e.g., Google Authenticator) for unlocking, to prevent unauthorized remote desktop access.
+While it can also be used to protect local computers, due to the possibility of physical access, it can only serve as an auxiliary login protection on local machines.
+Installation
+Dependencies
+Windows ≥ 7 SP1 (x86 and x64)
+Windows Server ≥ 2008 R2 SP1 (x64)
+.NET Framework ≥ 4.6.2
+Download: https://support.microsoft.com/zh-cn/help/3151800/the-net-framework-4-6-2-offline-installer-for-windows
+If you have an older version installed:
+It is recommended to clear user settings in the old version (this will also unbind the authenticator) before uninstalling the old version. (This is optional for upgrades but mandatory for downgrades)
+During the upgrade process, user settings and binding status may be automatically cleared.
+Install install.exe.
+If you do not actively configure file permissions, it is recommended to install it in the user folder to prevent password files from being accessed by other users.
+Run the shortcut created on the desktop or MFAScreenLockApp.exe in the installation directory.
+Configuration
+Run the program directly. If no authenticator has been bound, a setup screen will appear. Click the bind button.
+Ensure the displayed date and time are fully synchronized with your phone.
+Use an MFA app to scan the QR code.
+You can also manually enter the key displayed in the upper right into the authenticator.
+Note: If this computer's name, user domain, and username are the same as another computer, the login information on the other computer will be overwritten! If this occurs, please change your computer name and restart before scanning the code.
+Enter the code displayed on the authenticator and click to complete the binding.
+Note down the recovery code displayed on the screen.
+Clicking "Yes" will copy the recovery code to the clipboard; you can use this recovery code if the dynamic password cannot be used.
+Clicking "No" will not generate a recovery code. This is more secure but will prevent login if your phone is damaged, lost, the authentication app is uninstalled, or its data is lost.
+The binding information will display the computer name, user domain, and username.
+Note: The computer name, user domain, and username are part of the binding. If you change any of these, you will be unable to log in. To make changes, unbind the authenticator first.
+Close the setup window or proceed with "Lock Settings" and "Personalization" appearance settings.
+Close all program windows and right-click the system tray icon to exit the program. You will need to verify your password once.
+The next time the program starts, it will enter a locked state.
+Automatic Locking
+Method 1 (recommended): Right-click the taskbar icon and select "Auto Lock Settings".
+You can set it to run automatic locking at Windows startup.
+You can set it to automatically lock after a certain number of minutes.
+You can see the auto-lock timer below. If it does not work properly, use method two to configure automatic locking.
+The settings window will not trigger auto-lock when open.
+Method 2: Set this program to start on boot in Task Scheduler.
+You can add the -e parameter in the startup options. The program will exit immediately after unlocking (otherwise, the icon will remain in the system tray), allowing Task Scheduler's idle time feature to handle automatic locking.
+Example: MFAScreenLockApp.exe -e
+Usage
+The next time you run the program, the computer screen will be locked. Enter the dynamic password displayed in the authenticator or the recovery code, and press Enter.
+If correct, it will unlock directly.
+If incorrect, it will lock for a few seconds (default is 3 seconds) before allowing another attempt.
+The unlock screen's background image will be your primary display's desktop wallpaper and will automatically adjust (fit) the screen. If not set, the desktop wallpaper will be black.
+Text color will automatically switch between black and white based on the desktop wallpaper.
+Other non-primary displays will show a blank desktop wallpaper. If not set, the desktop wallpaper will be black.
+You can change these wallpaper, color, and font settings in "Personalization".
+After unlocking, an icon will remain in the system tray. Right-clicking it will bring up a menu to lock immediately, modify bindings, change appearance, and exit.
+These menu items will re-enter the password input state to verify identity before executing the selected command.
+If there is no icon in the system tray, the -e parameter might have been added to the startup options or an error occurred.
+Unbinding
+Method 1: Without the -e parameter, enter the password or recovery code to unlock, right-click the system tray icon, select "Binding Management", choose "Unbind", and then exit the software.
+Method 2: With the program completely exited, start it with the -r <recovery code> parameter. Confirm to directly clear all software settings, including the password. The software will automatically exit.
+Example: MFAScreenLockApp.exe -r Y8K2V-5J2ZL-F6QC8-ERFJ4-4HME8-POL50
+Troubleshooting
+Cannot run, prompts missing .NET Framework
+Install the .NET Framework runtime.
+Dynamic password always shows as incorrect
+Enter your recovery code in the password box.
+Go to binding settings and revalidate your recovery code.
+Clear all user settings.
+Cannot auto-lock on boot
+Disable startup at boot in program settings.
+Fully exit the program, then "Run as Administrator".
+Enable startup at boot in program settings.
+If still not working: use "Task Scheduler" to set startup at boot or move the program shortcut to the "Startup" folder.
+Program error: Feedback
